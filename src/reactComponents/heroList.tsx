@@ -9,7 +9,7 @@ import { Team } from '../components/Team'
 import { BoardPositionSchema } from '../data/boardPositionSchema';
 import { boardPositionData } from '../data/boardPositionData';
 import { heroData } from '../data/heroData';
-
+import cloneDeep from 'lodash/cloneDeep';
 
 interface Props {
     draftableHeroes: CardSchema[],
@@ -38,16 +38,16 @@ class HeroList extends React.Component<Props, State> {
         super(props);
 
     this.state = {
-        allyBoard: [/*
-            {position: 0, hero: null},
-            {position: 1, hero: null},
-            {position: 2, hero: null},
-            {position: 3, hero: null},
-            {position: 4, hero: null},
-            {position: 5, hero: null},
-            {position: 6, hero: null},
-            {position: 7, hero: null},
-            {position: 8, hero: null}*/
+        allyBoard: [
+            {position: 0, hero: ''},
+            {position: 1, hero: ''},
+            {position: 2, hero: ''},
+            {position: 3, hero: ''},
+            {position: 4, hero: ''},
+            {position: 5, hero: ''},
+            {position: 6, hero: ''},
+            {position: 7, hero: ''},
+            {position: 8, hero: ''}
         ],
         heroTrickery: [/*
             {position: 0, hero: 'spray'}, 
@@ -62,40 +62,21 @@ class HeroList extends React.Component<Props, State> {
         ],
 
 
-        enemyBoard: [/*
-            {position: 0, hero: null},
-            {position: 1, hero: 'null'},
-            {position: 2, hero: 'null'},
-            {position: 3, hero: 'null'},
-            {position: 4, hero: 'null'},
-            {position: 5, hero: 'null'},
-            {position: 6, hero: 'null'},
-            {position: 7, hero: 'null'},
-            {position: 8, hero: 'null'},*/
+        enemyBoard: [
+            {position: 0, hero: ''},
+            {position: 1, hero: ''},
+            {position: 2, hero: ''},
+            {position: 3, hero: ''},
+            {position: 4, hero: ''},
+            {position: 5, hero: ''},
+            {position: 6, hero: ''},
+            {position: 7, hero: ''},
+            {position: 8, hero: ''}
         ]
     }
 
 
-    //console.log(allyBoard)
 }
-
-    componentDidMount = () => {
-
-        let allyBoard = this.state.allyBoard
-        allyBoard = boardPositionData
-        this.setState({ allyBoard });
-        //console.log(allyBoard)
-
-        let enemyBoard = this.state.enemyBoard
-        enemyBoard = boardPositionData
-        this.setState({ enemyBoard });
-
-        let heroTrickery = this.state.heroTrickery
-        heroTrickery = boardPositionData
-        this.setState({ heroTrickery });
-
-
-    }
 
     handlePlacePick = (place: any) => { //SHOULD CORRECTLY TYPE THIS
         if (this.props.pickPhase === 'placing') { //need a handler in App.JSX that changes phase back to picking
@@ -115,54 +96,21 @@ class HeroList extends React.Component<Props, State> {
         //EXPERIMENTAL
             let index = this.props.enemyHeroes.length
             let hero = this.props.enemyHeroes[index -1]
-            let enemyBoardIndex = [...this.state.enemyBoard]
-            //console.log(enemyBoardIndex)
-            const filtered = enemyBoardIndex.filter(h => h.hero === '')
+            let enemyBoardIndex = cloneDeep(this.state.enemyBoard)
+            let emptyPositions = enemyBoardIndex.filter(h => h.hero === '')
             
-           // console.log(filtered)
-            
-            let position = enemyBoardIndex[Math.floor(Math.random()*enemyBoardIndex.length)].position
+            let position = emptyPositions[Math.floor(Math.random()*emptyPositions.length)].position
             let enemyBoard = [...this.state.enemyBoard]
-            enemyBoardIndex[position].hero = hero
-/*
-            let test = [...this.state.heroTrickery]
-            console.log(test)
-            let testFiltered = test.filter(h => h.hero === '')
-            console.log(testFiltered)*/
-/*
-            let hTest: {position: number, hero: String | null }[] = [
-                {position: 0, hero: 'spray'}, 
-                {position: 1, hero: null}, 
-                {position: 2, hero: 'working'}, 
-                {position: 3, hero: 'exuberant'}, 
-                {position: 4, hero: 'destruction'}, 
-                {position: 5, hero: null},
-                {position: 6, hero: 'null'},
-                {position: 7, hero: null},
-                {position: 8, hero: 'null'},
-            ]
-            */
-
-            let hTest = boardPositionData
-            let result = hTest.filter(h => h.hero == '');
+            enemyBoard[position].hero = hero
+          
+            
+            /*
+            let hTest: BoardPositionSchema[] = cloneDeep(this.state.enemyBoard)
+            let result = hTest.filter(h => h.hero === '');
             console.log('filtered: ')
             console.log(result);
+*/
 
-            
-
-        //EXPERIMENTAL
-
-/*
-            let index = this.props.enemyHeroes.length
-            let hero = this.props.enemyHeroes[index -1]
-            let place = Math.floor(Math.random()*8)
-            
-            let enemyBoard = [...this.state.enemyBoard]
-            console.log(enemyBoard[place])
-            if (enemyBoard[place].hero === null) {
-                enemyBoard[place].hero = hero
-            }
-            */
             this.setState({ enemyBoard })
             this.props.onPlaced()
     }
@@ -175,7 +123,6 @@ class HeroList extends React.Component<Props, State> {
             this.handleEnemyPlacePick()
             
         }
-
 
         return ( 
             <div>

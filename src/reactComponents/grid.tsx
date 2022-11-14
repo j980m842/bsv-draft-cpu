@@ -14,20 +14,19 @@ class Grid extends React.Component<Props> {
 
     render() { 
 
-
         return ( 
 
-          //EXPERIMENTAL MAPPYING
+          /*//EXPERIMENTAL MAPPYING
           <div className="container">
             {this.props.board.map(hero => (
                         <button 
-                            onClick={() => this.props.onPlacePick(0)} 
+                            onClick={() => this.props.onPlacePick(hero.position)} 
                             className="btn m-2 btn-primary">{hero.hero}</button>))} 
-          </div>
+          </div>*/
           //EXPERIMENTAL MAPPING
 
 
-           /* <div className="container">
+            <div className="container">
   <div className="row">
     <div className="col-sm outline">
       <button 
@@ -88,7 +87,7 @@ class Grid extends React.Component<Props> {
       </button>
     </div>
   </div>
-</div>*/
+</div>
          );
     }
 }

@@ -45,7 +45,6 @@ class App extends React.Component<Props, State> {
 }
 
 componentDidMount() {
-
   function priorityPicker() {
     let result = Math.random()*2
     console.log(result)
