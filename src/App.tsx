@@ -1,17 +1,12 @@
 import * as React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import HeroList from "./reactComponents/heroList"
-import { draft, userHeroes, aIHeroes } from "./components/draftSystem";
-import { executeDraft } from './components/executeDraft';
 import { heroData } from './data/heroData';
 import { heroQuery } from './utilities/heroQuery';
 import { CardSchema } from './data/cardSchema';
-import { EventType, Event } from './data/EventType';
 import { pickSequence } from './components/pickSequence';
 import { Team } from './components/Team';
-import { randomInt } from 'node:crypto';
-import { enemyDraftPick } from './utilities/enemyDraftPick';
+import { PickPhase } from './components/pickPhase'
 
 interface Props {
 }
@@ -22,14 +17,15 @@ interface State {
   draftableHeroesNames: String[],
   draftableHeroKeyTest: String,
   enemyHeroes: String[],
-  allyHeroes: String[],
+  allyHeroes: String[], //must change ally heroes and enemy heroes to be arrays of HEROES based on CARDSCHEMA rather than just strings of their names!
   currentPick: Team,
-  priority: Team
-  draftSequence: Team[]
-  draftSequenceIndex: number
+  priority: Team,
+  draftSequence: Team[],
+  draftSequenceIndex: number,
+  pickPhase: PickPhase
 }
  
-class App  extends React.Component<Props, State> {
+class App extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -43,36 +39,12 @@ class App  extends React.Component<Props, State> {
     currentPick: 'ally',
     priority: 'ally',
     draftSequence: [],
-    draftSequenceIndex: 0
+    draftSequenceIndex: 0,
+    pickPhase: 'picking'
 }
 }
 
 componentDidMount() {
-
-  //RIGHT HERE START WORKING ON HOW TO QUERY DATA FROM "HERODATA"
-  //WHEN STUCK LOOK INTO REDUCE METHOD FOR ARRAYS
-
-/*
-  let draftableHeroes = [...this.state.draftableHeroes]
-  draftableHeroes = heroRoster._heroes
-  let dHlength = draftableHeroes.length
-  let draftableHeroesNames: String[] = []
-  for (let i = 0; i < dHlength; i++) {
-      draftableHeroesNames.push(draftableHeroes[i]._name)
-  }
-  this.setState({ draftableHeroesNames });
-
-
-  
-  const allyHeroes = [...this.state.allyHeroes];
-  allyHeroes[0] = 'haha';
-  const enemyHeroes = [...this.state.enemyHeroes];
-  enemyHeroes[0] = 'darkKnight';
-  this.setState({ allyHeroes });
-  this.setState({ enemyHeroes });
-*/
-  
-
 
   function priorityPicker() {
     let result = Math.random()*2
@@ -98,7 +70,7 @@ componentDidMount() {
   this.setState({ draftableHeroes });
 
   let result = heroQuery('warrior')
-  //console.log(result?.startingHealth)
+  console.log(this.state.draftableHeroes)
 
   
 }
@@ -114,17 +86,17 @@ handleHeroPick = (pick: CardSchema) => {
   const draftableHeroes = this.state.draftableHeroes.filter(h => h.name !== pick.name);
   this.setState({ draftableHeroes })
 
-  let currentPick = this.state.currentPick
-  let draftSequenceIndex = this.state.draftSequenceIndex
-  draftSequenceIndex++
-  this.setState({ draftSequenceIndex })
-  currentPick = this.state.draftSequence[this.state.draftSequenceIndex + 1]
-  this.setState({ currentPick })
+  let pickPhase: PickPhase = 'placing'
+  this.setState({ pickPhase })
+
 
 
 }
 
+
 enemyDraftPick = () => {
+
+  //Executing the pick
   let draftableHeroes = this.state.draftableHeroes
   const index = Math.floor(Math.random()*draftableHeroes.length)
   const pick = draftableHeroes[index]
@@ -134,8 +106,21 @@ enemyDraftPick = () => {
   this.setState({ enemyHeroes })
   console.log('enemy draft pick executed')
 
+  //cleanup and iterating draft sequence
   draftableHeroes = this.state.draftableHeroes.filter(h => h.name !== pick.name);
   this.setState({ draftableHeroes })
+  
+  
+  //placing the picked hero
+  let pickPhase: PickPhase = 'placing'
+  this.setState({ pickPhase })
+  
+}
+
+handlePlaced = () => {
+  let pickPhase: PickPhase = 'picking'
+  this.setState({ pickPhase })
+
   
   let currentPick = this.state.currentPick
   let draftSequenceIndex = this.state.draftSequenceIndex
@@ -143,21 +128,19 @@ enemyDraftPick = () => {
   this.setState({ draftSequenceIndex })
   currentPick = this.state.draftSequence[this.state.draftSequenceIndex + 1]
   this.setState({ currentPick })
-  
+
+
+
 }
-  
    
 
 render() {
+ 
+  // I NEED TO CHECK IF ITS PICKING OR PLACING PHASE AND THEN PUT IN LOGIC TO ACCOMODATE TIMING
+  console.log(this.state.pickPhase +  " -- " + this.state.currentPick)
 
-  let draftResult = executeDraft();
-  let attacker = 'fireMage' //WORK NOW ON MAKING HEROQUERY FUNCTION A MODULE AND USING IT WITH THE ONCLICK STUFF
-  console.log(this.state.currentPick)
-  console.log(this.state.draftSequenceIndex)
-  console.log(this.state.draftSequence[this.state.draftSequenceIndex])
-  
-  if (this.state.currentPick === 'enemy') {
-    console.log('re-rendered with current pick == enemy')
+  if (this.state.pickPhase === 'picking' && this.state.currentPick === 'enemy' ) {
+    //console.log('re-rendered with current pick == enemy')
     
     this.enemyDraftPick();
   }
@@ -180,8 +163,11 @@ render() {
           draftableHeroes={this.state.draftableHeroes}
           draftableHeroesNames={this.state.draftableHeroesNames}
           draftableHeroKeyTest={this.state.draftableHeroKeyTest}
+          currentPick={this.state.currentPick}
 
           onHeroPick={this.handleHeroPick}
+          pickPhase={this.state.pickPhase}
+          onPlaced={this.handlePlaced}
         />
         
       </header>
