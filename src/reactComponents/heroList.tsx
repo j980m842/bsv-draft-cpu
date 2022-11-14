@@ -25,7 +25,6 @@ interface Props {
 
 interface State {
     allyBoard: BoardPositionSchema[]
-    heroTrickery: BoardPositionSchema[]
         
     
     enemyBoard: BoardPositionSchema[]
@@ -48,17 +47,6 @@ class HeroList extends React.Component<Props, State> {
             {position: 6, hero: ''},
             {position: 7, hero: ''},
             {position: 8, hero: ''}
-        ],
-        heroTrickery: [/*
-            {position: 0, hero: 'spray'}, 
-            {position: 1, hero: null}, 
-            {position: 2, hero: 'working'}, 
-            {position: 3, hero: 'exuberant'}, 
-            {position: 4, hero: 'destruction'}, 
-            {position: 5, hero: 'null'},
-            {position: 6, hero: 'null'},
-            {position: 7, hero: 'null'},
-            {position: 8, hero: 'null'},*/
         ],
 
 
@@ -87,13 +75,13 @@ class HeroList extends React.Component<Props, State> {
             allyBoard[place].hero = hero
             this.setState({ allyBoard })
             
-            this.props.onPlaced() //ITERATING BETWEEN PLACING AND PICKING IS NOT WORKING
+            this.props.onPlaced() 
 
         }
         }
 
     handleEnemyPlacePick = () => {
-        //EXPERIMENTAL
+  
             let index = this.props.enemyHeroes.length
             let hero = this.props.enemyHeroes[index -1]
             let enemyBoardIndex = cloneDeep(this.state.enemyBoard)
@@ -103,21 +91,12 @@ class HeroList extends React.Component<Props, State> {
             let enemyBoard = [...this.state.enemyBoard]
             enemyBoard[position].hero = hero
           
-            
-            /*
-            let hTest: BoardPositionSchema[] = cloneDeep(this.state.enemyBoard)
-            let result = hTest.filter(h => h.hero === '');
-            console.log('filtered: ')
-            console.log(result);
-*/
-
             this.setState({ enemyBoard })
             this.props.onPlaced()
     }
     
 
     render() { 
-        
         
         if (this.props.currentPick === 'enemy' && this.props.pickPhase === 'placing') {
             this.handleEnemyPlacePick()
