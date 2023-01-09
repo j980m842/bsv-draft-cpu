@@ -3,7 +3,6 @@ import { Heroes } from "./Heroes";
 import { heroRoster } from "./heroRoster";
 import { updateDraftRoster } from "./updateDraftRoster";
 import { Team } from "./Team";
-import { startingPriority } from "./startingPriority";
 import { pickSequence } from "./pickSequence";
 
 export function armorSort(): Array<Hero> {

@@ -7,6 +7,7 @@ export type Event =
     'yourPick'      |
     'yourBan'       |
     'enemyPick'     |
-    'enemyBan'
+    'enemyBan'      |
+    'complete'
 
 
